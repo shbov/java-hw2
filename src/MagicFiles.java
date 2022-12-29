@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.stream.Stream;
@@ -32,13 +30,15 @@ public final class MagicFiles {
    */
   public void run() {
     Stream<Path> all;
+
     try {
-      all = findAllFiles();
+      all = FileHelper.findAllFiles(FileHelper.combinePath(getCurrentDirectory(), "data"));
     } catch (IOException e) {
       System.out.printf(e.getMessage());
       return;
     }
 
+    // добавляем, сортируем и выводим
     all.forEach(this::addFile);
     sortFiles();
     writeAllFiles();
@@ -52,10 +52,10 @@ public final class MagicFiles {
   }
 
   /**
-   * Объединяет все файлы в один all.txt.
+   * Объединяет все файлы в один
    */
   private void writeAllFiles() {
-    String path = FileHelper.combinePath(currentDirectory, "all.txt").toString();
+    String path = FileHelper.combinePath(getCurrentDirectory(), "all.txt").toString();
 
     try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(path))) {
       for (File file : files) {
@@ -79,19 +79,5 @@ public final class MagicFiles {
    */
   private void addFile(Path file) {
     files.add(file.toFile());
-  }
-
-  /**
-   * Находит все файлы в директории.
-   *
-   * @return поток путей к файлам
-   * @throws IOException если что-то пошло не так
-   */
-  private Stream<Path> findAllFiles() throws IOException {
-    return Files.find(
-        Paths.get(FileHelper.combinePath(getCurrentDirectory(), "data").toString()),
-        Integer.MAX_VALUE,
-        (filePath, fileAttr) -> fileAttr.isRegularFile()
-    );
   }
 }
