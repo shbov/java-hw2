@@ -1,3 +1,5 @@
+import magic.files.MagicFiles;
+
 /**
  * Входная точка программы
  */

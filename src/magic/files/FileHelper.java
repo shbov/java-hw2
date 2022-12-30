@@ -1,13 +1,21 @@
+package magic.files;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
  * Класс-помощник для работы с файлами.
  */
 public final class FileHelper {
+
   private FileHelper() {
   }
 
@@ -35,5 +43,28 @@ public final class FileHelper {
         Integer.MAX_VALUE,
         (filePath, fileAttr) -> fileAttr.isRegularFile()
     );
+  }
+
+  /**
+   * Конкатинирует все файлы в один.
+   *
+   * @param currentDirectory текущая директория
+   * @param files            список файлов
+   */
+  public static void writeAllFiles(Path currentDirectory, List<String> files) {
+    String path = FileHelper.combinePath(currentDirectory.toString(), "all.txt").toString();
+
+    try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(path))) {
+      for (String file : files) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
+          while (bufferedReader.ready()) {
+            bufferedWriter.write(bufferedReader.readLine());
+            bufferedWriter.newLine();
+          }
+        }
+      }
+    } catch (Exception ex) {
+      System.out.println(ex.getMessage());
+    }
   }
 }
